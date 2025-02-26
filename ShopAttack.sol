@@ -15,7 +15,7 @@ contract ShopAttack {
             uint p = shop.price() + 1;
             return p;
         } else {
-            return 1;
+            return 0;
         }
     }
 

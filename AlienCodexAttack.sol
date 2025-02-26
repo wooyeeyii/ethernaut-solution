@@ -1,5 +1,5 @@
 /**
-    // calculate slot-1 location
+    // calculate codex[0] location
     hash := sha3.NewLegacyKeccak256()
 	h, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000001")
 	hash.Write(h)
